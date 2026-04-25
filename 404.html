@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Training</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f6f3;
+  --white: #ffffff;
+  --text: #1a1a1a;
+  --text-secondary: #5c5c5c;
+  --text-tertiary: #9a9a9a;
+  --border: #e2dfda;
+  --border-light: #eceae6;
+  --accent: #c33c3c;
+  --accent-soft: rgba(195,60,60,0.07);
+  --green: #3a7d5c;
+  --green-soft: rgba(58,125,92,0.08);
+  --amber: #c47a1a;
+  --amber-soft: rgba(196,122,26,0.08);
+  --sage: #7c9a82;
+  --sage-soft: rgba(124,154,130,0.1);
+  --clay: #b87356;
+  --clay-soft: rgba(184,115,86,0.1);
+  --slate: #6b839e;
+  --slate-soft: rgba(107,131,158,0.1);
+  --plum: #8b6e8e;
+  --plum-soft: rgba(139,110,142,0.1);
+  --surface: #f0eee9;
+  --radius: 4px;
+  --radius-lg: 8px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', -apple-system, system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.01em;
+}
+
+/* ── Nav ── */
+.nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  display: flex;
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  padding: 10px 4px 8px; gap: 2px;
+  color: var(--text-tertiary); font-size: 10px; font-weight: 500;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  cursor: pointer; transition: color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-item.active { color: var(--sage); }
+.nav-icon { font-size: 18px; margin-bottom: 1px; }
+
+/* ── Layout ── */
+.page { display: none; padding: 24px 20px 100px; max-width: 540px; margin: 0 auto; }
+.page.active { display: block; }
+
+.page-header { margin-bottom: 32px; padding-top: 8px; }
+.page-title {
+  font-size: 13px; font-weight: 500; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--sage); margin-bottom: 6px;
+}
+.page-headline {
+  font-size: 28px; font-weight: 300; letter-spacing: -0.02em; line-height: 1.2;
+}
+.page-sub { color: var(--text-secondary); font-size: 14px; margin-top: 8px; font-weight: 300; }
+
+/* ── Card ── */
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 16px;
+}
+.card-label {
+  font-size: 11px; font-weight: 500; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--text-tertiary); margin-bottom: 16px;
+}
+.card-title {
+  font-size: 18px; font-weight: 400; letter-spacing: -0.01em; margin-bottom: 4px;
+}
+.card-desc { font-size: 14px; color: var(--text-secondary); font-weight: 300; line-height: 1.6; }
+
+.card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+
+.tag {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 5px 12px; border-radius: 100px;
+}
+.tag-rest { background: var(--surface); color: var(--text-secondary); }
+.tag-active { background: var(--sage-soft); color: var(--sage); }
+.tag-alert { background: var(--accent-soft); color: var(--accent); }
+
+/* ── Divider ── */
+.divider { height: 1px; background: var(--border-light); margin: 20px 0; }
+
+/* ── Section Label ── */
+.section-label {
+  font-size: 11px; font-weight: 500; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--clay);
+  margin: 24px 0 14px; padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-light);
+}
+.section-label:first-child { margin-top: 0; }
+
+/* ── Exercise ── */
+.exercise {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+.exercise:last-child { border-bottom: none; }
+.exercise-check {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 1.5px solid var(--border); flex-shrink: 0;
+  cursor: pointer; transition: all 0.2s; margin-top: 1px;
+  display: flex; align-items: center; justify-content: center;
+}
+.exercise-check.done {
+  background: var(--sage); border-color: var(--sage);
+}
+.exercise-check.done::after {
+  content: '✓'; color: var(--white); font-size: 12px; font-weight: 600;
+}
+.exercise-info { flex: 1; }
+.exercise-name { font-size: 15px; font-weight: 500; margin-bottom: 2px; }
+.exercise-detail { font-size: 13px; color: var(--text-secondary); font-weight: 400; }
+.exercise-note {
+  font-size: 12px; color: var(--text-tertiary); margin-top: 6px;
+  line-height: 1.5; font-weight: 400;
+}
+
+/* ── Sciatica ── */
+.zone-list { display: flex; flex-direction: column; gap: 6px; }
+.zone-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 16px; border-radius: var(--radius-lg);
+  background: var(--white); border: 1.5px solid var(--border);
+  cursor: pointer; transition: all 0.15s;
+}
+.zone-item.selected { border-color: var(--amber); background: var(--amber-soft); }
+.zone-item.selected.good { border-color: var(--sage); background: var(--sage-soft); }
+.zone-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--border); flex-shrink: 0;
+  transition: background 0.15s;
+}
+.zone-item.selected .zone-dot { background: var(--amber); }
+.zone-item.selected.good .zone-dot { background: var(--sage); }
+.zone-label { font-size: 14px; font-weight: 500; }
+.zone-sub { font-size: 12px; color: var(--text-tertiary); font-weight: 400; }
+
+.trend-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 100px;
+  font-size: 13px; font-weight: 500; margin-top: 8px;
+}
+.trend-pill.up { background: var(--sage-soft); color: var(--green); }
+.trend-pill.flat { background: var(--slate-soft); color: var(--slate); }
+.trend-pill.down { background: var(--accent-soft); color: var(--accent); }
+
+/* ── Recovery Grid ── */
+.recovery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.recovery-tile {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 14px;
+  text-align: center;
+  cursor: pointer; transition: all 0.15s;
+}
+.recovery-tile.used { border-color: var(--sage); background: var(--sage-soft); }
+.recovery-tile.used .recovery-name { color: var(--green); }
+.recovery-icon { font-size: 24px; margin-bottom: 8px; display: block; }
+.recovery-name { font-size: 13px; font-weight: 500; }
+.recovery-sub { font-size: 11px; color: var(--text-tertiary); margin-top: 4px; font-weight: 400; }
+
+/* ── Rating ── */
+.rating-row {
+  display: flex; align-items: center; gap: 12px; padding: 14px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+.rating-row:last-child { border-bottom: none; }
+.rating-label { font-size: 13px; font-weight: 500; width: 48px; flex-shrink: 0; }
+.rating-pills { display: flex; gap: 4px; flex: 1; }
+.rating-pill {
+  flex: 1; height: 32px; border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--white);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 500; color: var(--text-tertiary);
+  cursor: pointer; transition: all 0.15s;
+}
+.rating-pill.sel-low { background: var(--sage); color: var(--white); border-color: var(--sage); }
+.rating-pill.sel-mid { background: var(--amber); color: var(--white); border-color: var(--amber); }
+.rating-pill.sel-high { background: var(--accent); color: var(--white); border-color: var(--accent); }
+
+/* ── Stats ── */
+.stat-row { display: flex; gap: 10px; margin-bottom: 20px; }
+.stat-box {
+  flex: 1; background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 20px 16px; text-align: center;
+}
+.stat-num { font-size: 32px; font-weight: 300; letter-spacing: -0.02em; }
+.stat-num.c1 { color: var(--sage); }
+.stat-num.c2 { color: var(--slate); }
+.stat-num.c3 { color: var(--clay); }
+.stat-label {
+  font-size: 10px; font-weight: 500; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--text-tertiary); margin-top: 4px;
+}
+
+/* ── Buttons ── */
+.btn {
+  display: block; width: 100%; padding: 14px;
+  border: none; border-radius: var(--radius);
+  font-size: 13px; font-weight: 500; font-family: inherit;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  cursor: pointer; transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-dark { background: var(--sage); color: var(--white); }
+.btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+.btn-danger { background: transparent; color: var(--accent); border: 1px solid var(--border); }
+.btn + .btn { margin-top: 10px; }
+
+/* ── Textarea ── */
+.text-input {
+  width: 100%; background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 14px; color: var(--text); font-size: 14px;
+  font-family: inherit; resize: vertical; min-height: 56px;
+  font-weight: 300;
+}
+.text-input::placeholder { color: var(--text-tertiary); }
+
+/* ── Day Tabs ── */
+.day-tabs {
+  display: flex; gap: 6px; overflow-x: auto;
+  padding: 4px 0 20px;
+  -webkit-overflow-scrolling: touch;
+}
+.day-tabs::-webkit-scrollbar { display: none; }
+.day-tab {
+  flex-shrink: 0; padding: 10px 16px;
+  border-radius: var(--radius); border: 1px solid var(--border);
+  background: var(--white);
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all 0.15s;
+  text-align: center; min-width: 52px;
+}
+.day-tab.active { background: var(--sage); color: var(--white); border-color: var(--sage); }
+.day-tab.done { border-color: var(--sage); color: var(--sage); }
+.day-tab.rest { color: var(--text-tertiary); border-color: var(--border-light); }
+.day-tab .tab-date { font-size: 11px; font-weight: 400; opacity: 0.6; display: block; margin-top: 2px; }
+
+/* ── Week Nav ── */
+.week-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.week-nav-btn {
+  background: none; border: 1px solid var(--border);
+  color: var(--text); width: 32px; height: 32px;
+  border-radius: 50%; font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.week-label { font-size: 14px; font-weight: 500; letter-spacing: 0.02em; }
+
+/* ── Rule ── */
+.rule-item {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 14px; line-height: 1.6; font-weight: 300;
+}
+.rule-item:last-child { border-bottom: none; }
+.rule-item strong { font-weight: 500; }
+
+/* ── Flare steps ── */
+.flare-step {
+  display: flex; gap: 14px; padding: 14px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+.flare-step:last-child { border-bottom: none; }
+.flare-num {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--clay-soft); color: var(--clay);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 500; flex-shrink: 0;
+}
+.flare-text { font-size: 14px; line-height: 1.5; font-weight: 300; padding-top: 4px; }
+
+/* ── History bar ── */
+.history-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0; border-bottom: 1px solid var(--border-light);
+}
+.history-row:last-child { border-bottom: none; }
+.history-date { font-size: 12px; color: var(--text-tertiary); width: 56px; flex-shrink: 0; font-weight: 400; }
+.history-bar { flex: 1; height: 4px; background: var(--border-light); border-radius: 2px; overflow: hidden; }
+.history-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
+.history-loc { font-size: 12px; color: var(--text-tertiary); width: 72px; text-align: right; font-weight: 400; }
+
+/* ── Schedule row ── */
+.sched-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 12px 0; border-bottom: 1px solid var(--border-light);
+}
+.sched-row:last-child { border-bottom: none; }
+.sched-day { font-size: 14px; font-weight: 500; }
+.sched-desc { font-size: 13px; color: var(--text-secondary); font-weight: 300; text-align: right; }
+
+/* ── Prose ── */
+.prose { font-size: 14px; line-height: 1.8; color: var(--text-secondary); font-weight: 300; }
+.prose strong { color: var(--text); font-weight: 500; }
+
+/* ── Recovery stat ── */
+.rec-stat {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 0;
+}
+.rec-stat-name { font-size: 13px; font-weight: 400; }
+.rec-stat-val { font-size: 13px; font-weight: 500; }
+.rec-stat-val.active { color: var(--sage); }
+.rec-stat-val.zero { color: var(--text-tertiary); }
+</style>
+</head>
+<body>
+
+<!-- ═══ TODAY ═══ -->
+<div id="page-today" class="page active">
+  <div class="page-header">
+    <div class="page-title">Training</div>
+    <div class="page-headline" id="today-headline">Today</div>
+    <div class="page-sub" id="today-date"></div>
+  </div>
+  <div id="today-content"></div>
+</div>
+
+<!-- ═══ LOG ═══ -->
+<div id="page-log" class="page">
+  <div class="page-header">
+    <div class="page-title">Log</div>
+    <div class="page-headline">Your Week</div>
+  </div>
+  <div class="week-nav">
+    <button class="week-nav-btn" onclick="changeWeek(-1)">‹</button>
+    <span class="week-label" id="week-label"></span>
+    <button class="week-nav-btn" onclick="changeWeek(1)">›</button>
+  </div>
+  <div class="day-tabs" id="day-tabs"></div>
+  <div id="log-content"></div>
+</div>
+
+<!-- ═══ SCIATICA ═══ -->
+<div id="page-sciatica" class="page">
+  <div class="page-header">
+    <div class="page-title">Track</div>
+    <div class="page-headline">Sciatica</div>
+    <div class="page-sub">Where are you feeling it today?</div>
+  </div>
+  <div id="sciatica-content"></div>
+</div>
+
+<!-- ═══ RECOVERY ═══ -->
+<div id="page-recovery" class="page">
+  <div class="page-header">
+    <div class="page-title">Recover</div>
+    <div class="page-headline">Recovery</div>
+    <div class="page-sub">What did you use today?</div>
+  </div>
+  <div id="recovery-content"></div>
+</div>
+
+<!-- ═══ PROGRAM ═══ -->
+<div id="page-program" class="page">
+  <div class="page-header">
+    <div class="page-title">Program</div>
+    <div class="page-headline">Phase 1</div>
+    <div class="page-sub">Foundation & Mobility · Weeks 1–4</div>
+  </div>
+  <div id="program-content"></div>
+</div>
+
+<!-- ═══ NAV ═══ -->
+<nav class="nav">
+  <div class="nav-item active" onclick="switchPage('today')">
+    <span class="nav-icon">○</span><span>Today</span>
+  </div>
+  <div class="nav-item" onclick="switchPage('log')">
+    <span class="nav-icon">☰</span><span>Log</span>
+  </div>
+  <div class="nav-item" onclick="switchPage('sciatica')">
+    <span class="nav-icon">◇</span><span>Track</span>
+  </div>
+  <div class="nav-item" onclick="switchPage('recovery')">
+    <span class="nav-icon">↻</span><span>Recover</span>
+  </div>
+  <div class="nav-item" onclick="switchPage('program')">
+    <span class="nav-icon">▤</span><span>Program</span>
+  </div>
+</nav>
+
+<script>
+// ═══════════════════════════
+// DATA
+// ═══════════════════════════
+
+const PROGRAM = {
+  monday: {
+    label: 'Monday', title: 'Lower Body',
+    subtitle: 'Hip & Glute Activation',
+    warmup: [
+      { name: 'Foam Roll', detail: 'Glutes, hip flexors, IT band, T-spine · 2 min each' },
+      { name: '90/90 Hip Switches', detail: '8 each side', note: 'Comfortable range — don\'t force internal rotation' },
+      { name: 'Dead Bugs', detail: '12 each side', note: 'Slow and controlled, low back stays flat' },
+      { name: 'Banded Lateral Walks', detail: '15 each direction' }
+    ],
+    main: [
+      { name: 'Goblet Squat to Box', detail: '3 × 10', note: 'Stop at parallel. Box enforces depth limit.' },
+      { name: 'Single-Leg RDL', detail: '3 × 8 per side', note: 'Hip hinge pattern. Slight knee bend.' },
+      { name: 'Banded Clamshells', detail: '3 × 15 per side', note: 'External rotation — key for FAI management' },
+      { name: 'Hip Flexor Stretch → Glute Bridge', detail: '3 × 30s hold + 10 reps', note: 'No hyperextension at top of bridge' },
+      { name: 'Lateral Lunges', detail: '3 × 8 per side', note: 'Moderate depth only' },
+      { name: 'Pallof Press', detail: '3 × 10 per side', note: 'Anti-rotation core' }
+    ],
+    finisher: [
+      { name: 'Bird Dogs', detail: '2 × 10 per side · 3 sec hold' },
+      { name: 'Child\'s Pose', detail: '1 min', note: 'Skip if sciatica is active' },
+      { name: 'Prone Press-Ups', detail: '2 × 10', note: 'Do these daily — disc centralization' }
+    ]
+  },
+  tuesday: {
+    label: 'Tuesday', title: 'Upper Body',
+    subtitle: 'Pull + Core Stability',
+    warmup: [
+      { name: 'Band Pull-Aparts', detail: '20 reps' },
+      { name: 'T-Spine Rotations', detail: '10 per side' },
+      { name: 'Scapular Push-Ups', detail: '12 reps' },
+      { name: 'Arm Circles', detail: '15 each direction' }
+    ],
+    main: [
+      { name: 'Cable Face Pulls', detail: '3 × 15', note: 'Rear delts and posture' },
+      { name: 'Lat Pulldown', detail: '3 × 10 · neutral grip', note: 'Controlled eccentric. Seated = no spinal load.' },
+      { name: 'Single-Arm DB Row', detail: '3 × 10 per side', note: 'Bench-supported. No torso rotation.' },
+      { name: 'Half-Kneeling Cable Chop', detail: '3 × 10 per side · high to low', note: 'Rotational pattern — golf and hockey transfer' },
+      { name: 'Prone Y-T-W Raises', detail: '2 × 8 each position' },
+      { name: 'Dead Hang', detail: '3 × 30 sec', note: 'Spinal decompression' }
+    ],
+    finisher: [
+      { name: 'Side Plank', detail: '2 × 20–30 sec per side' },
+      { name: 'T-Spine Foam Roll', detail: '2 min' },
+      { name: 'Prone Press-Ups', detail: '10 reps' }
+    ]
+  },
+  thursday: {
+    label: 'Thursday', title: 'Lower Body',
+    subtitle: 'Posterior Chain & Mobility',
+    warmup: [
+      { name: 'Foam Roll', detail: 'Hamstrings, adductors, calves, glutes' },
+      { name: 'World\'s Greatest Stretch', detail: '5 per side', note: 'No cat-cow transition' },
+      { name: 'Glute Bridges', detail: '15 reps' },
+      { name: 'Ankle Mobility Circles', detail: '10 per side' }
+    ],
+    main: [
+      { name: 'Trap Bar Deadlift', detail: '3 × 6 · very light', note: 'Monitor for tingling. Drop if symptoms increase.' },
+      { name: 'Hip Thrust', detail: '3 × 10', note: 'No spinal load, no deep hip flexion' },
+      { name: 'Cable Pull-Through', detail: '3 × 12', note: 'Spine-friendly glute and hamstring' },
+      { name: 'Copenhagen Plank', detail: '3 × 15 sec per side · bent knee', note: 'Adductor strength for skating' },
+      { name: 'Step-Ups', detail: '3 × 8 per side', note: 'Moderate height, controlled' },
+      { name: 'McGill Curl-Up', detail: '3 × 8 · 5 sec hold', note: 'Only safe flexion exercise for L5 pars defects' }
+    ],
+    finisher: [
+      { name: 'Supine Figure-4 Stretch', detail: '60 sec per side' },
+      { name: 'Prone Press-Ups', detail: '10 reps' },
+      { name: 'Supine Spinal Twist', detail: '60 sec per side', note: 'Skip if sciatica is active' }
+    ]
+  },
+  friday: {
+    label: 'Friday', title: 'Upper Body',
+    subtitle: 'Push + Rotational Power',
+    warmup: [
+      { name: 'Band Dislocates', detail: '15 reps' },
+      { name: 'Push-Up Plus', detail: '10 reps' },
+      { name: 'T-Spine Rotation', detail: '8 per side · side-lying' },
+      { name: 'Light Med Ball Tosses', detail: '10 reps' }
+    ],
+    main: [
+      { name: 'DB Bench Press', detail: '3 × 10 · neutral grip', note: 'Lying = no spinal compression' },
+      { name: 'Landmine Press', detail: '3 × 8 per side · half-kneeling', note: 'Rotational pressing pattern' },
+      { name: 'Cable Wood Chops', detail: '3 × 10 per side · low to high', note: 'Golf swing power — spine stays rigid' },
+      { name: 'Push-Ups', detail: '3 × 12 · varied grip' },
+      { name: 'Med Ball Rotational Throw', detail: '3 × 6 per side', note: 'Explosive, low impact. No jumping.' },
+      { name: 'Farmer\'s Carry', detail: '3 × 40 yards', note: 'Core bracing and posture' }
+    ],
+    finisher: [
+      { name: 'Banded Pull-Aparts', detail: '2 × 15' },
+      { name: 'Dead Hang', detail: '30–45 sec' }
+    ]
+  }
+};
+
+const RECOVERY = [
+  { id: 'cold_tub', name: 'Cold Tub', icon: '◆', sub: '3–5 min', color: 'var(--slate)' },
+  { id: 'sauna', name: 'Infrared Sauna', icon: '◇', sub: '20–30 min', color: 'var(--clay)' },
+  { id: 'cryo', name: 'Cryobed', icon: '○', sub: '2–3 min', color: 'var(--slate)' },
+  { id: 'normatec', name: 'Normatec', icon: '◎', sub: '20–30 min', color: 'var(--plum)' },
+  { id: 'dead_hang', name: 'Dead Hangs', icon: '│', sub: '30–60 sec', color: 'var(--sage)' },
+  { id: 'foam_roll', name: 'Foam Rolling', icon: '≡', sub: '5–10 min', color: 'var(--green)' },
+  { id: 'press_ups', name: 'Press-Ups', icon: '△', sub: '10 reps × 3–4', color: 'var(--amber)' },
+  { id: 'walking', name: 'Walking', icon: '→', sub: '20–30 min', color: 'var(--sage)' }
+];
+
+const ZONES = [
+  { id: 'none', label: 'No symptoms', sub: 'Pain-free', level: 0 },
+  { id: 'glute', label: 'Glute or low back', sub: 'Centralized', level: 1 },
+  { id: 'above_knee', label: 'Above the knee', sub: 'Moderate', level: 2 },
+  { id: 'below_knee', label: 'Below the knee', sub: 'Peripheralizing', level: 3 },
+  { id: 'calf', label: 'Into the calf', sub: 'Significant', level: 4 },
+  { id: 'foot', label: 'Into the foot', sub: 'Contact your PT', level: 5 }
+];
+
+const RULES = [
+  '<strong>No back squats.</strong> Goblet or trap bar only. Never below parallel.',
+  '<strong>No conventional deadlifts.</strong> Trap bar only, very light, only if tolerated.',
+  '<strong>No sit-ups or crunches.</strong> McGill curl-up is the only flexion exercise.',
+  '<strong>No lumbar hyperextension.</strong> No back extensions, supermans, or GHD.',
+  '<strong>No standing overhead press.</strong> Seated or landmine only.',
+  '<strong>No deep hip flexion under load.</strong> Parallel is your limit.',
+  '<strong>No high-impact plyometrics.</strong> Med ball throws for explosive work.',
+  '<strong>If tingling increases</strong> during or after exercise — stop and report it.',
+  '<strong>Dead hangs daily.</strong> Spinal decompression is critical with multilevel stenosis.',
+  '<strong>Walk 20–30 min daily.</strong> Non-negotiable spine maintenance.',
+  '<strong>Prone press-ups daily.</strong> Disc centralization.',
+  '<strong>Pain is information.</strong> Stop, note it, and we adjust.'
+];
+
+const FLARE = [
+  'Infrared sauna — 20 min',
+  'Gentle mobility: dead bugs, 90/90s, easy range — 10 min',
+  'Dead hangs — 3 × 30 sec',
+  'Normatec on legs — 20 min',
+  'Cold tub — 3 min',
+  'If pain persists 2+ days → we modify the program'
+];
+
+// ═══════════════════════════
+// STATE
+// ═══════════════════════════
+
+const SK = 'jc_training_v2';
+const load = () => { try { return JSON.parse(localStorage.getItem(SK)) || {}; } catch { return {}; } };
+const save = (s) => localStorage.setItem(SK, JSON.stringify(s));
+const today = () => new Date().toISOString().slice(0,10);
+const getDay = (d) => { const s=load(); if(!s.days) s.days={}; if(!s.days[d]) s.days[d]={ex:{},rec:[],sci:null,hip:null,back:null,notes:''}; return s.days[d]; };
+const setDay = (d,data) => { const s=load(); if(!s.days) s.days={}; s.days[d]=data; save(s); };
+const dow = (d) => new Date(d+'T12:00:00').getDay();
+const workoutFor = (d) => ({1:'monday',2:'tuesday',4:'thursday',5:'friday'})[dow(d)] || null;
+
+const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const fmtDate = (d) => { const dt=new Date(d+'T12:00:00'); return `${MONTHS[dt.getMonth()]} ${dt.getDate()}`; };
+
+let currentPage = 'today', weekOffset = 0, selLogDay = null;
+
+// ═══════════════════════════
+// NAV
+// ═══════════════════════════
+
+function switchPage(p) {
+  currentPage = p;
+  document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach((n,i) =>
+    n.classList.toggle('active', ['today','log','sciatica','recovery','program'][i]===p));
+  render(p);
+}
+function render(p) {
+  ({today:rToday,log:rLog,sciatica:rSciatica,recovery:rRecovery,program:rProgram})[p]();
+}
+
+// ═══════════════════════════
+// TODAY
+// ═══════════════════════════
+
+function rToday() {
+  const d = today(), dt = new Date(d+'T12:00:00');
+  document.getElementById('today-date').textContent = `${DAYS[dt.getDay()]}, ${MONTHS[dt.getMonth()]} ${dt.getDate()}`;
+
+  const wk = workoutFor(d), c = document.getElementById('today-content'), dd = getDay(d);
+  const lastSci = recentSci(), trend = sciTrend();
+
+  let sciCard = '';
+  if (lastSci) {
+    const z = ZONES.find(x=>x.id===lastSci.zone);
+    sciCard = `<div class="card">
+      <div class="card-header">
+        <div><div class="card-label">Sciatica</div><div style="font-size:15px;font-weight:500">${z?z.label:'—'}</div></div>
+        ${trend?`<div class="trend-pill ${trend.cls}">${trend.icon} ${trend.text}</div>`:''}
+      </div></div>`;
+  }
+
+  if (!wk) {
+    document.getElementById('today-headline').textContent = 'Rest Day';
+    c.innerHTML = `${sciCard}
+      <div class="card">
+        <div class="card-label">Active Recovery</div>
+        <div class="prose">
+          Golf, hockey, or full rest.<br><br>
+          <strong>Daily essentials</strong><br>
+          Dead hangs — 30–60 sec<br>
+          Prone press-ups — 10 reps, 3–4 times<br>
+          Walking — 20–30 min
+        </div>
+        <div class="divider"></div>
+        <div class="prose">Good day for infrared sauna to promote blood flow and joint relief.</div>
+        <div style="margin-top:16px"><button class="btn btn-outline" onclick="switchPage('recovery')">Log Recovery</button></div>
+      </div>`;
+  } else {
+    const w = PROGRAM[wk];
+    document.getElementById('today-headline').textContent = w.title;
+    const all = [...w.warmup,...w.main,...w.finisher];
+    const done = all.filter((_,i)=>dd.ex[wk+'_'+i]).length;
+    const pct = Math.round((done/all.length)*100);
+
+    c.innerHTML = `${sciCard}
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-label">${w.subtitle}</div></div>
+          <span class="tag tag-active">${pct}%</span>
+        </div>
+        <div class="section-label">Warm-Up</div>
+        ${w.warmup.map((e,i)=>exHtml(e,wk+'_'+i,d)).join('')}
+        <div class="section-label">Main Work</div>
+        ${w.main.map((e,i)=>exHtml(e,wk+'_'+(w.warmup.length+i),d)).join('')}
+        <div class="section-label">Finisher</div>
+        ${w.finisher.map((e,i)=>exHtml(e,wk+'_'+(w.warmup.length+w.main.length+i),d)).join('')}
+      </div>
+      <div class="card">
+        <div class="card-label">Body Check</div>
+        <div class="rating-row">
+          <span class="rating-label">Hips</span>
+          <div class="rating-pills">${pills('hip',d,dd.hip)}</div>
+        </div>
+        <div class="rating-row">
+          <span class="rating-label">Back</span>
+          <div class="rating-pills">${pills('back',d,dd.back)}</div>
+        </div>
+        <div style="margin-top:16px">
+          <textarea class="text-input" placeholder="Notes — weight, feel, issues..."
+            onchange="sNotes('${d}',this.value)">${dd.notes||''}</textarea>
+        </div>
+      </div>
+      <button class="btn btn-outline" onclick="switchPage('recovery')">Log Recovery</button>
+      <button class="btn btn-outline" onclick="switchPage('sciatica')">Track Sciatica</button>`;
+  }
+}
+
+function exHtml(e,k,d) {
+  const dd=getDay(d), done=dd.ex[k]||false;
+  return `<div class="exercise">
+    <div class="exercise-check ${done?'done':''}" onclick="togEx('${d}','${k}')"></div>
+    <div class="exercise-info">
+      <div class="exercise-name">${e.name}</div>
+      <div class="exercise-detail">${e.detail}</div>
+      ${e.note?`<div class="exercise-note">${e.note}</div>`:''}
+    </div></div>`;
+}
+
+function togEx(d,k) {
+  const dd=getDay(d); dd.ex[k]=!dd.ex[k]; setDay(d,dd); render(currentPage);
+}
+
+function pills(type,d,cur) {
+  return [1,2,3,4,5,6,7,8,9,10].map(n =>
+    `<div class="rating-pill ${cur===n?(n<=3?'sel-low':n<=6?'sel-mid':'sel-high'):''}" onclick="setR('${d}','${type}',${n})">${n}</div>`
+  ).join('');
+}
+
+function setR(d,type,v) {
+  const dd=getDay(d);
+  if(type==='hip') dd.hip=dd.hip===v?null:v; else dd.back=dd.back===v?null:v;
+  setDay(d,dd); render(currentPage);
+}
+
+function sNotes(d,v) { const dd=getDay(d); dd.notes=v; setDay(d,dd); }
+
+// ═══════════════════════════
+// SCIATICA
+// ═══════════════════════════
+
+function rSciatica() {
+  const d=today(), dd=getDay(d), c=document.getElementById('sciatica-content');
+  const hist=sciHist(), trend=sciTrend();
+
+  c.innerHTML = `
+    <div class="zone-list" style="margin-bottom:24px">
+      ${ZONES.map(z => {
+        const sel=dd.sci===z.id, good=z.level<=1;
+        return `<div class="zone-item ${sel?'selected':''} ${sel&&good?'good':''}" onclick="setSci('${d}','${z.id}')">
+          <div class="zone-dot"></div>
+          <div><div class="zone-label">${z.label}</div><div class="zone-sub">${z.sub}</div></div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    ${trend?`<div class="card">
+      <div class="card-label">Trend</div>
+      <div class="trend-pill ${trend.cls}">${trend.icon} ${trend.text}</div>
+      <div class="prose" style="margin-top:12px">${trend.detail}</div>
+    </div>`:''}
+
+    ${hist.length?`<div class="card">
+      <div class="card-label">History</div>
+      ${hist.slice(0,10).map(h => {
+        const z=ZONES.find(x=>x.id===h.zone);
+        const w=z?(z.level/5)*100:0;
+        const col=z&&z.level<=1?'var(--green)':z&&z.level<=3?'var(--amber)':'var(--accent)';
+        return `<div class="history-row">
+          <span class="history-date">${fmtDate(h.date)}</span>
+          <div class="history-bar"><div class="history-fill" style="width:${w}%;background:${col}"></div></div>
+          <span class="history-loc">${z?z.label.split(' ')[0]:''}</span>
+        </div>`;
+      }).join('')}
+    </div>`:''}
+
+    <div class="card">
+      <div class="card-label">Understanding</div>
+      <div class="prose">
+        <strong>Centralizing (improving):</strong> Symptoms moving up toward glute<br>
+        <strong>Peripheralizing (worsening):</strong> Symptoms moving down toward foot<br><br>
+        After prone press-ups → should centralize<br>
+        After prolonged sitting → may peripheralize<br>
+        After flexion → likely to peripheralize
+      </div>
+    </div>`;
+}
+
+function setSci(d,id) { const dd=getDay(d); dd.sci=dd.sci===id?null:id; setDay(d,dd); rSciatica(); }
+function recentSci() { const s=load(); if(!s.days) return null; const ds=Object.keys(s.days).sort().reverse(); for(const d of ds){ if(s.days[d].sci) return {date:d,zone:s.days[d].sci}; } return null; }
+function sciHist() { const s=load(); if(!s.days) return []; return Object.keys(s.days).filter(d=>s.days[d].sci).sort().reverse().map(d=>({date:d,zone:s.days[d].sci})); }
+function sciTrend() {
+  const h=sciHist(); if(h.length<2) return null;
+  const a=ZONES.find(z=>z.id===h[0].zone), b=ZONES.find(z=>z.id===h[1].zone);
+  if(!a||!b) return null;
+  if(a.level<b.level) return {cls:'up',icon:'↑',text:'Centralizing',detail:'Symptoms moving upward. The nerve irritation is decreasing.'};
+  if(a.level>b.level) return {cls:'down',icon:'↓',text:'Peripheralizing',detail:'Symptoms traveling further down. Increase press-ups and avoid flexion.'};
+  return {cls:'flat',icon:'→',text:'Stable',detail:'Holding steady. Continue current approach.'};
+}
+
+// ═══════════════════════════
+// RECOVERY
+// ═══════════════════════════
+
+function rRecovery() {
+  const d=today(), dd=getDay(d), c=document.getElementById('recovery-content');
+  c.innerHTML = `
+    <div class="recovery-grid" style="margin-bottom:24px">
+      ${RECOVERY.map(t => {
+        const used=(dd.rec||[]).includes(t.id);
+        return `<div class="recovery-tile ${used?'used':''}" onclick="togRec('${d}','${t.id}')">
+          <span class="recovery-icon" style="color:${t.color}">${t.icon}</span>
+          <div class="recovery-name">${t.name}</div>
+          <div class="recovery-sub">${t.sub}</div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <div class="card">
+      <div class="card-label">Flare-Up Protocol</div>
+      <div class="prose" style="margin-bottom:16px">When hips or back are acting up — skip the workout.</div>
+      ${FLARE.map((s,i)=>`<div class="flare-step">
+        <div class="flare-num">${i+1}</div>
+        <div class="flare-text">${s}</div>
+      </div>`).join('')}
+    </div>
+
+    <div class="card">
+      <div class="card-label">This Week</div>
+      ${recStats()}
+    </div>`;
+}
+
+function togRec(d,id) {
+  const dd=getDay(d); if(!dd.rec) dd.rec=[];
+  const i=dd.rec.indexOf(id); if(i>=0) dd.rec.splice(i,1); else dd.rec.push(id);
+  setDay(d,dd); rRecovery();
+}
+
+function recStats() {
+  const s=load(); if(!s.days) return '<div class="prose">No data yet</div>';
+  const t=new Date(today()+'T12:00:00'), ws=new Date(t); ws.setDate(t.getDate()-t.getDay()+1);
+  const counts={}; RECOVERY.forEach(r=>counts[r.id]=0);
+  for(let i=0;i<7;i++) { const d=new Date(ws); d.setDate(ws.getDate()+i); const k=d.toISOString().slice(0,10);
+    if(s.days[k]&&s.days[k].rec) s.days[k].rec.forEach(r=>{if(counts[r]!==undefined) counts[r]++;}); }
+  return RECOVERY.map(r=>`<div class="rec-stat">
+    <span class="rec-stat-name">${r.name}</span>
+    <span class="rec-stat-val ${counts[r.id]?'active':'zero'}">${counts[r.id]}×</span>
+  </div>`).join('');
+}
+
+// ═══════════════════════════
+// LOG
+// ═══════════════════════════
+
+function weekDates(off) {
+  const t=new Date(today()+'T12:00:00'), ws=new Date(t);
+  ws.setDate(t.getDate()-t.getDay()+1+(off*7));
+  return Array.from({length:7},(_,i)=>{const d=new Date(ws);d.setDate(ws.getDate()+i);return d.toISOString().slice(0,10);});
+}
+function changeWeek(dir) { weekOffset+=dir; selLogDay=null; rLog(); }
+
+function rLog() {
+  const dates=weekDates(weekOffset), td=today(), dn=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  document.getElementById('week-label').textContent = fmtDate(dates[0])+' – '+fmtDate(dates[6]);
+  document.getElementById('day-tabs').innerHTML = dates.map((d,i) => {
+    const wk=workoutFor(d), dd=getDay(d), isTd=d===td, isSel=selLogDay===d;
+    let cls=''; if(isSel) cls='active'; else if(!wk) cls='rest';
+    const hasData=Object.values(dd.ex).some(v=>v)||dd.sci||(dd.rec&&dd.rec.length);
+    if(hasData&&!isSel) cls+=' done';
+    const dt=new Date(d+'T12:00:00');
+    return `<div class="day-tab ${cls}" onclick="pickDay('${d}')">${dn[i]}<span class="tab-date">${dt.getDate()}</span></div>`;
+  }).join('');
+  if(!selLogDay) selLogDay=td;
+  rLogDay(selLogDay);
+}
+
+function pickDay(d) { selLogDay=d; rLog(); }
+
+function rLogDay(d) {
+  const c=document.getElementById('log-content'), dd=getDay(d), wk=workoutFor(d);
+  if(!wk) {
+    c.innerHTML=`<div class="card"><div class="card-label">Recovery Day</div>
+      <div class="prose">Active recovery, golf, hockey, or rest.</div>
+      <div style="margin-top:16px"><textarea class="text-input" placeholder="What did you do?"
+        onchange="sNotes('${d}',this.value)">${dd.notes||''}</textarea></div></div>`;
+    return;
+  }
+  const w=PROGRAM[wk], all=[...w.warmup,...w.main,...w.finisher], done=all.filter((_,i)=>dd.ex[wk+'_'+i]).length;
+  c.innerHTML=`<div class="card">
+    <div class="card-header">
+      <div><div class="card-label">${w.title} · ${w.subtitle}</div></div>
+      <span class="tag tag-active">${done}/${all.length}</span>
+    </div>
+    <div class="section-label">Warm-Up</div>
+    ${w.warmup.map((e,i)=>exHtml(e,wk+'_'+i,d)).join('')}
+    <div class="section-label">Main Work</div>
+    ${w.main.map((e,i)=>exHtml(e,wk+'_'+(w.warmup.length+i),d)).join('')}
+    <div class="section-label">Finisher</div>
+    ${w.finisher.map((e,i)=>exHtml(e,wk+'_'+(w.warmup.length+w.main.length+i),d)).join('')}
+  </div>
+  <div class="card">
+    <div class="card-label">Body Check</div>
+    <div class="rating-row"><span class="rating-label">Hips</span><div class="rating-pills">${pills('hip',d,dd.hip)}</div></div>
+    <div class="rating-row"><span class="rating-label">Back</span><div class="rating-pills">${pills('back',d,dd.back)}</div></div>
+  </div>
+  <div class="card"><div class="card-label">Notes</div>
+    <textarea class="text-input" placeholder="Weight, feel, issues..."
+      onchange="sNotes('${d}',this.value)">${dd.notes||''}</textarea></div>`;
+}
+
+// ═══════════════════════════
+// PROGRAM
+// ═══════════════════════════
+
+function rProgram() {
+  const c=document.getElementById('program-content'), s=load();
+  let workouts=0,recCount=0,streak=0;
+  if(s.days) {
+    Object.values(s.days).forEach(d=>{
+      if(Object.values(d.ex||{}).some(v=>v)) workouts++;
+      if(d.rec&&d.rec.length) recCount+=d.rec.length;
+    });
+    const td=new Date(today()+'T12:00:00');
+    for(let i=0;i<365;i++){
+      const d=new Date(td);d.setDate(td.getDate()-i);const k=d.toISOString().slice(0,10);
+      if(s.days[k]&&(Object.values(s.days[k].ex||{}).some(v=>v)||(s.days[k].rec&&s.days[k].rec.length))) streak++;
+      else if(i>0) break;
+    }
+  }
+
+  c.innerHTML=`
+    <div class="stat-row">
+      <div class="stat-box"><div class="stat-num c1">${workouts}</div><div class="stat-label">Workouts</div></div>
+      <div class="stat-box"><div class="stat-num c2">${recCount}</div><div class="stat-label">Recovery</div></div>
+      <div class="stat-box"><div class="stat-num c3">${streak}</div><div class="stat-label">Streak</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Schedule</div>
+      ${['monday','tuesday'].map(d=>`<div class="sched-row"><span class="sched-day">${PROGRAM[d].label}</span><span class="sched-desc">${PROGRAM[d].subtitle}</span></div>`).join('')}
+      <div class="sched-row"><span class="sched-day" style="color:var(--text-tertiary)">Wednesday</span><span class="sched-desc">Recovery</span></div>
+      ${['thursday','friday'].map(d=>`<div class="sched-row"><span class="sched-day">${PROGRAM[d].label}</span><span class="sched-desc">${PROGRAM[d].subtitle}</span></div>`).join('')}
+      <div class="sched-row"><span class="sched-day" style="color:var(--text-tertiary)">Sat – Sun</span><span class="sched-desc">Recovery</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Rules</div>
+      ${RULES.map(r=>`<div class="rule-item">${r}</div>`).join('')}
+    </div>
+
+    <div class="card">
+      <div class="card-label">Diagnoses</div>
+      <div class="prose">
+        <strong>Hips</strong> — Bilateral cam morphology · Mild bilateral osteoarthritis<br><br>
+        <strong>Lumbar spine</strong> — L5 pars defects + grade 1 slip · L4-L5 disc protrusion + stenosis · L2-L3 retrolisthesis + moderate stenosis · Multilevel disc bulges · Facet arthropathy
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Sport Transfer</div>
+      <div class="prose">
+        <strong>Golf</strong> — Rotational power from chops, med ball, and landmine press. Hip stability prevents swing compensation. T-spine mobility lets you rotate through the upper back, not the lower back.<br><br>
+        <strong>Hockey</strong> — Lateral lunges and Copenhagen planks for skating. Single-leg stability for stride. Core bracing for contact.
+      </div>
+    </div>
+
+    <button class="btn btn-danger" onclick="if(confirm('Clear all data? This cannot be undone.')){localStorage.removeItem('${SK}');render(currentPage);}">Reset All Data</button>`;
+}
+
+// ═══════════════════════════
+// INIT
+// ═══════════════════════════
+rToday();
+</script>
+</body>
+</html>
